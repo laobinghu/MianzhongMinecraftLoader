@@ -21,18 +21,16 @@ jobs:
       - name: Build project with Nuitka-Action
         uses: Nuitka/Nuitka-Action@main
         with:
-          nuitka-version: 2.4.8
+          windows-icon-from-ico: ./loader.ico
+          nuitka-version: main
           script-name: main.py
-          standalone: true
+          mode: app
           enable-plugins: tk-inter
           windows-console-mode: disable
-          windows-icon-from-ico: loader.ico
           mingw64: yes
           show-memory: yes
-          show-progress: yes
           include-data-dir: asset=asset
           assume-yes-for-downloads: yes
-          onefile: true
       - name: Get tag name
         id: get_tag
         run: |
