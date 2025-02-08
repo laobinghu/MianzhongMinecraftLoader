@@ -19,7 +19,6 @@ jobs:
           python-version: '3.12'	
       - name: Install dependencies
         run:
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Build project with Nuitka-Action
         uses: Nuitka/Nuitka-Action@main
