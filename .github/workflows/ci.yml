@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-	  # 标明编译环境为windows，也可以换成ubuntu/mac
     runs-on: windows-latest
 
     steps:
