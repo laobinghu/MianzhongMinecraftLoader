@@ -1,57 +1,71 @@
+# 导入所需库
 from json import loads
 from requests import request
 
 
 class Config:
     def __init__(self):
-        self.ReleaseCode = "通慧"
-        self.VersionType = "Dev"
-        self.MajorVersionNum = 2
-        self.MinorVersionNum = 0
-        self.RevisionVersionNum = 0
-        self.DateVersionNum = "20250208"
-        self.Meta = "ReBuilding"
-        self.version = None
+        # 初始化配置属性
+        self.ReleaseCode = "通慧"  # 发布代码标识
+        self.VersionType = "Dev"  # 版本类型（开发版、正式版等）
+        self.MajorVersionNum = 2  # 主版本号
+        self.MinorVersionNum = 0  # 次版本号
+        self.RevisionVersionNum = 0  # 修订版本号
+        self.DateVersionNum = "20250208"  # 日期版本号
+        self.Meta = "ReBuilding"  # 元数据信息，如构建状态
+        self.version = None  # 完整版本字符串，初始化为空
 
+        # 设置请求远程配置的URL和头部信息
         self.url = "https://mx.647382.xyz/api/v2/snippets/mzmcos/loader"
         self.headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0"}
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0"}  # HTTP请求头模拟浏览器
+
+        # 初始化网络请求响应和服务器配置变量
         self.response = None
         self.ServerConfig = None
 
-        #self.
+        # 启动器下载链接
+        self.LauncherUrl = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
 
     def GetVersion(self):
+        """生成并返回完整版本字符串"""
         version_fields = {
             'ReleaseCode': self.ReleaseCode,
             'VersionType': self.VersionType,
             'MajorVersionNum': self.MajorVersionNum,
-            'MinorVersionNum': self.MinorVersionNum,  # 修正此处的 Self 为 self 并移除多余的 VersionNum
+            'MinorVersionNum': self.MinorVersionNum,
             'RevisionVersionNum': self.RevisionVersionNum,
             'DateVersionNum': self.DateVersionNum,
             'Meta': self.Meta
         }
+        # 根据字段拼接版本字符串
         self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}~{version_fields['Meta']}"
         return self.version
 
     def GetInfo(self):
+        """预留方法，用于获取其他配置信息，当前未实现"""
         pass
 
-    # 获取服务器配置信息
     def GetServerConfig(self):
-        """从远程服务器获取配置数据"""
+        """从远程服务器获取配置数据的方法"""
         self.response = request("GET", self.url, headers=self.headers)
+        # 解析响应内容为JSON格式并返回
         return loads(self.response.text)
 
-    # 处理服务器配置逻辑，包含异常处理
     def handle_server_config(self):
-        """尝试获取服务器配置并处理异常"""
+        """尝试获取服务器配置，包含异常处理逻辑"""
         try:
+            # 调用GetServerConfig获取配置，并设置到实例变量中
             self.ServerConfig = self.GetServerConfig()
             return self.ServerConfig
         except Exception:
+            # 如果请求过程中发生错误，则返回None
             return None
 
+
+# 主程序入口
 if __name__ == "__main__":
+    # 创建Config类的实例
     config = Config()
+    # 打印生成的版本信息
     print(config.GetVersion())

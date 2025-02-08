@@ -6,14 +6,15 @@ from zipfile import ZipFile
 from DownloadKit import DownloadKit  # 自定义下载工具类
 from sys import exc_info
 from shutil import rmtree
+from config import Config
 
+config = Config()
 
 # 下载函数，使用DownloadKit工具进行文件下载
 def Download():
     """下载启动器压缩包"""
     d = DownloadKit(r'.\tmp')
-    url1 = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
-    d.download(url1, file_exists="overwrite", show_msg=True)
+    d.download(config.LauncherUrl, file_exists="overwrite", show_msg=True)
 
 
 # 解压函数，解压之前下载的ZIP文件到指定目录
