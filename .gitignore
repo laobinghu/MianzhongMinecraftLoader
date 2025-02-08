@@ -2,3 +2,4 @@
 *.exe
 *.spec
 /build
+/dist

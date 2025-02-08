@@ -1,8 +1,9 @@
 # 导入日志模块
 import logging
+from time import strftime,localtime
 
 # 设置日志模块的基本配置，级别为INFO，格式为：[日志级别][时间]: 日志信息
-logging.basicConfig(level=logging.INFO, format='[%(levelname)s][%(asctime)s]: %(message)s')
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s][%(asctime)s]: %(message)s',filename='{}.log'.format(strftime("%a %b %d %H:%M:%S %Y",localtime()) ),filemode='w',)
 
 
 # 定义一个Logger类来封装日志操作
