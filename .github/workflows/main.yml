@@ -1,8 +1,6 @@
 name: Tag Workflow
 on:
   push:
-    tags:
-      - 'v*.*.*'
 
 jobs:
   build:
