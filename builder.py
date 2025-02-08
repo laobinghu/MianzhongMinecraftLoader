@@ -3,6 +3,7 @@ import subprocess
 from config import Config
 
 config = Config()
+TempTuple = tuple(config.GetVersion(builder=True))
 
 def nuitka_package(main_file, extra_folder, output_name="main"):
     """
@@ -20,16 +21,15 @@ def nuitka_package(main_file, extra_folder, output_name="main"):
         "nuitka",
         "--standalone",
         "--onefile",
-        "-–disable-console",
-        r"–-windows-icon-from-ico=./loader.ico",
+        "--windows-console-mode=disable",
+        r"--windows-icon-from-ico='./loader.ico'",
         "--follow-imports",  # 包含所有依赖项
-        "--include-package=PIL", # 显式包含PIL,解决图片相关问题
-        "-–enable-plugin=tk-inter", # 显式包含tkinter,解决部分打包问题
-        "--windows-company-name=绵中方块人服务器管理组",
-        "--windows-product-name=MianzhongMinecraftLoader",
-        "--windows-product-version={}".format(config.GetVersion()),
-        f"--include-data-dir={extra_folder}={extra_folder}",  # 包含额外资源文件夹
-        f"--output-filename={output_name}",  # 设置输出文件名
+        "--enable-plugin=tk-inter", # 显式包含tkinter,解决部分打包问题
+        "--windows-company-name='绵中方块人服务器管理组'",
+        "--windows-product-name='MianzhongMinecraftLoader'",
+        "--windows-file-version=2",
+        f"--include-data-dir='{extra_folder}={extra_folder}'",  # 包含额外资源文件夹
+        f"--output-filename='{output_name}'",  # 设置输出文件名
         main_file,
     ]
 
@@ -47,8 +47,8 @@ def nuitka_package(main_file, extra_folder, output_name="main"):
 if __name__ == "__main__":
     main_file = "main.py"  # 你的主 Python 文件
     extra_folder = "asset"  # 你的额外资源文件夹
-    output_name = "MinecraftLoader"  # 你想要的可执行文件名称
-
+    output_name = "MianzhongMinecraftLoader {}".format(config.GetVersion())  # 你想要的可执行文件名称
+    print("当前打包版本",TempTuple)
     # 检查文件和文件夹是否存在
     if not os.path.exists(main_file):
         print(f"错误: 找不到主文件: {main_file}")

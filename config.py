@@ -27,7 +27,7 @@ class Config:
         # 启动器下载链接
         self.LauncherUrl = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
 
-    def GetVersion(self):
+    def GetVersion(self,builder=False):
         """生成并返回完整版本字符串"""
         version_fields = {
             'ReleaseCode': self.ReleaseCode,
@@ -39,8 +39,16 @@ class Config:
             'Meta': self.Meta
         }
         # 根据字段拼接版本字符串
-        self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}~{version_fields['Meta']}"
-        return self.version
+        if builder:
+            self.version = list()
+            self.version.append(self.MajorVersionNum)
+            self.version.append(self.MinorVersionNum)
+            self.version.append(self.RevisionVersionNum)
+            self.version.append(int(self.DateVersionNum))
+            return self.version
+        else:
+            self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}~{version_fields['Meta']}"
+            return self.version
 
     def GetInfo(self):
         """预留方法，用于获取其他配置信息，当前未实现"""
