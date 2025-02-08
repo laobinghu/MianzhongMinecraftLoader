@@ -7,7 +7,7 @@ from sys import exc_info
 from tkinter import messagebox
 from threading import Thread
 
-from tools import (Download, Unzip, Open, check_launcher_exists, force_update, handle_server_config)
+from tools import (Download, Unzip, Open, check_launcher_exists, force_update)
 from config import Config
 
 config = Config()
@@ -74,8 +74,9 @@ class MinecraftLoader:
         self.update_progress(10)
         sleep(0.3)
 
-        ServerConfig = handle_server_config(self.value, self.info)
+        ServerConfig = config.handle_server_config()
         if ServerConfig is None:
+            self.update_info("在请求API时发生了未知错误,请在群内询问API是否正常")
             sleep(1)
             self.master.quit()
             self.master.destroy()

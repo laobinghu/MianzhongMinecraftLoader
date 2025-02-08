@@ -1,66 +1,56 @@
+# 导入必要的模块和自定义工具包
 from os import getcwd, startfile
 from os.path import exists
-from json import loads
 from time import sleep
 from zipfile import ZipFile
-from requests import request
-from DownloadKit import DownloadKit
+from DownloadKit import DownloadKit  # 自定义下载工具类
 from sys import exc_info
-from os.path import exists
 from shutil import rmtree
 
+
+# 下载函数，使用DownloadKit工具进行文件下载
 def Download():
+    """下载启动器压缩包"""
     d = DownloadKit(r'.\tmp')
     url1 = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
     d.download(url1, file_exists="overwrite", show_msg=True)
 
 
+# 解压函数，解压之前下载的ZIP文件到指定目录
 def Unzip():
+    """解压ZIP文件至当前工作目录"""
     zip_path = getcwd() + r'\tmp\launcher.zip'
-    extract_folder = ''
-
+    extract_folder = ''  # 注意：此处应指定实际提取路径或修正为适当值
     with ZipFile(zip_path, 'r') as zip_ref:
         zip_ref.extractall(extract_folder)
         print("ZIP文件解压完成")
 
 
+# 启动函数，执行启动器exe文件
 def Open():
+    """打开启动器应用程序"""
     exe_path = getcwd() + r"\launcher\Plain Craft Launcher 2.exe"
     startfile(exe_path)
 
 
-def GetServerConfig():
-    url = "https://mx.647382.xyz/api/v2/snippets/mzmcos/loader"
-    header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0"}
-    response = request("GET", url, headers=header)
-
-    ServerConfig = loads(response.text)
-
-    return ServerConfig
-
+# 检查启动器是否已存在
 def check_launcher_exists():
-    """检查启动器是否存在"""
+    """检查指定路径下的启动器是否存在"""
     return exists(r".\launcher\Plain Craft Launcher 2.exe")
 
+
+# 强制更新操作，删除旧的临时文件及启动器目录
 def force_update():
-    """强制更新启动器"""
+    """执行强制更新，删除tmp和launcher目录"""
     rmtree(r".\tmp", ignore_errors=True)
     rmtree(r".\launcher", ignore_errors=True)
 
-def handle_server_config(value, info):
-    """处理服务器配置"""
-    try:
-        ServerConfig = GetServerConfig()
-        return ServerConfig
-    except Exception as e:
-        value.set(100)
-        info.set("出错了qwq{}".format(e))
-        info.set("异常信息：{}".format(exc_info()))
-        return None
 
 
+# 主程序入口
 if __name__ == "__main__":
-    print(r"""
+    # 打印欢迎及版本信息
+    print("""
   __  __                         ___   ____  
  |  \/  | ____ _ __ ___    ___  / _ \ / ___| 
  | |\/| ||_  /| '_ ` _ \  / __|| | | |\___ \ 
@@ -70,6 +60,8 @@ if __name__ == "__main__":
             Ver CUI Dev 0.0.2
 Tip:已下载的文件会被覆盖                                
 """)
+
+    # 判断必要文件是否存在以决定是否需要下载和解压
     if exists(r'.\tmp\launcher.zip') and exists(r".\launcher\Plain Craft Launcher 2.exe"):
         print("整合包已存在,跳过下载")
         sleep(1)
@@ -83,6 +75,7 @@ Tip:已下载的文件会被覆盖
         match UserInput:
             case "yes":
                 try:
+                    # 检查并下载、解压启动器
                     if not exists(r'.\tmp\launcher.zip'):
                         Download()
                         sleep(1)
@@ -95,19 +88,16 @@ Tip:已下载的文件会被覆盖
                     else:
                         print("启动器已存在,进入启动环节")
                         sleep(1)
-
                 except Exception as e:
-                    print("出错了qwq{}".format(e))
-                    print("异常信息：{}".format(exc_info()))
+                    print(f"出错了qwq{e}")
+                    print(f"异常信息：{exc_info()}")
                     print("请截图发给管理员")
                     sleep(5)
                 else:
                     print("enjoy")
                     sleep(1)
                     Open()
-
             case _:
                 print("下次再见。")
                 sleep(1)
                 pass
-
