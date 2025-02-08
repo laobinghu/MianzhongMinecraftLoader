@@ -7,12 +7,12 @@ class Config:
     def __init__(self):
         # 初始化配置属性
         self.ReleaseCode = "通慧"  # 发布代码标识
-        self.VersionType = "Dev"  # 版本类型（开发版、正式版等）
+        self.VersionType = "Release"  # 版本类型（开发版、正式版等）
         self.MajorVersionNum = 2  # 主版本号
-        self.MinorVersionNum = 0  # 次版本号
-        self.RevisionVersionNum = 0  # 修订版本号
+        self.MinorVersionNum = 2  # 次版本号
+        self.RevisionVersionNum = 1  # 修订版本号
         self.DateVersionNum = "20250208"  # 日期版本号
-        self.Meta = "ReBuilding"  # 元数据信息，如构建状态
+        self.Meta = "F**kNuitka"  # 元数据信息，如构建状态
         self.version = None  # 完整版本字符串，初始化为空
 
         # 设置请求远程配置的URL和头部信息
