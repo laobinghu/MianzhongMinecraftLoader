@@ -1,0 +1,85 @@
+name: Tag Workflow
+on:
+  push:
+    # 使用tags/*来监听所有的tag事件
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build:
+	  # 标明编译环境为windows，也可以换成ubuntu/mac
+    runs-on: windows-latest
+
+    steps:
+	    # 这个步骤为git checkout 当前的tag的代码
+      - name: Checkout code with current tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          
+			# 这个步骤为设置python的环境为python3.10
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+			
+			# 这个步骤为安装python依赖
+      - name: Install dependencies
+        run:
+          #python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build project with Nuitka-Action
+        uses: Nuitka/Nuitka-Action@main
+        with:
+          nuitka-version: 2.4.8
+          script-name: main.py
+          standalone: true
+          enable-plugins: tk-inter
+          windows-console-mode: disable
+          windows-icon-from-ico: loader.ico
+          mingw64: yes
+          show-memory: yes
+          show-progress: yes
+          include-data-dir: asset=asset
+          assume-yes-for-downloads: yes
+          onefile: true
+
+			# 过去最新的tag号
+      - name: Get tag name
+        id: get_tag
+        run: |
+          $current_tag = git describe --tags --abbrev=0 HEAD
+          echo "tag=${current_tag}" >> $env:GITHUB_ENV
+
+			# 将需要的文件和编译产物一起压缩成压缩包
+      - name: Compress files
+        run: |
+          mkdir -p release/onemore_${{ env.tag }}
+          cp -r build/main.dist/* release/onemore_${{ env.tag }}/
+          cp -r app/resource release/onemore_${{ env.tag }}/app/resource
+          cp -r tools release/onemore_${{ env.tag }}/tools
+          Compress-Archive -Path release/onemore_${{ env.tag }} -DestinationPath release/onemore_${{ env.tag }}.zip
+      
+      # 创建github release号
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.tag }}
+          release_name: Auto Build ${{ env.tag }}
+          draft: false
+          prerelease: false
+
+			# 将上面的压缩包上传到上面创建的release中
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/onemore_${{ env.tag }}.zip
+          asset_name: onemore_${{ env.tag }}.zip
+          asset_content_type: application/zip
