@@ -1,1 +1,4 @@
 /nuitka-crash-report.xml
+*.exe
+*.spec
+/build
