@@ -11,11 +11,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.ref }}
-      
-      - name: set time
-        run: |
-          TIME="$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M:%S')"
-          echo "TIME=$TIME" >> $GITHUB_ENV
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -46,8 +41,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.TIME }}
-          release_name: Auto Build ${{ env.TIME }}
+          tag_name: Auto Build 
+          release_name: Auto Build 
           draft: false
           prerelease: false
       - name: Upload Release Asset
