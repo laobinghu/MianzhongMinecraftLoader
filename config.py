@@ -9,7 +9,7 @@ class Config:
         self.ReleaseCode = "通慧"  # 发布代码标识
         self.VersionType = "Release"  # 版本类型（开发版、正式版等）
         self.MajorVersionNum = 2  # 主版本号
-        self.MinorVersionNum = 3  # 次版本号
+        self.MinorVersionNum = 4  # 次版本号
         self.RevisionVersionNum = 2  # 修订版本号
         self.DateVersionNum = "202502012"  # 日期版本号
         self.Meta = ""  # 元数据信息，如构建状态
