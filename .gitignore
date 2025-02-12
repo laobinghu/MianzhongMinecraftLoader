@@ -4,3 +4,6 @@
 /build
 /dist
 /__pycache__
+/.idea
+*.log
+
