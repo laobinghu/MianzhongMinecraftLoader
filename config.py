@@ -26,7 +26,6 @@ class Config:
 
         # 启动器下载链接
         self.LauncherUrl = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
-        self.JavaUrl = "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/21.0.3+9/"
 
     def GetVersion(self,builder=False):
         """生成并返回完整版本字符串"""
