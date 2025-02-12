@@ -1,6 +1,13 @@
 # 导入日志模块
 import logging
-from time import strftime,localtime
+from os import remove
+
+try:
+    remove("loader.log")
+except FileNotFoundError:
+    pass
+else:
+    pass
 
 # 设置日志模块的基本配置，级别为INFO，格式为：[日志级别][时间]: 日志信息
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s][%(asctime)s]: %(message)s',filename='loader.log',filemode='a',)
