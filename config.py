@@ -1,6 +1,7 @@
 # 导入所需库
 from json import loads
 from requests import request
+from mid import generate_mid
 
 
 class Config:
@@ -12,7 +13,6 @@ class Config:
         self.MinorVersionNum = 4  # 次版本号
         self.RevisionVersionNum = 2  # 修订版本号
         self.DateVersionNum = "202502012"  # 日期版本号
-        self.Meta = ""  # 元数据信息，如构建状态
         self.version = None  # 完整版本字符串，初始化为空
 
         # 设置请求远程配置的URL和头部信息
@@ -26,6 +26,8 @@ class Config:
 
         # 启动器下载链接
         self.LauncherUrl = 'https://cdn.647382.xyz/mzmcos/launcher.zip'
+
+        self.MID = generate_mid()
 
     def GetVersion(self,builder=False):
         """生成并返回完整版本字符串"""
@@ -53,6 +55,9 @@ class Config:
     def GetInfo(self):
         """预留方法，用于获取其他配置信息，当前未实现"""
         pass
+
+    def GetMID(self):
+        return self.MID
 
     def GetServerConfig(self):
         """从远程服务器获取配置数据的方法"""
