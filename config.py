@@ -9,10 +9,10 @@ class Config:
         self.ReleaseCode = "通慧"  # 发布代码标识
         self.VersionType = "Release"  # 版本类型（开发版、正式版等）
         self.MajorVersionNum = 2  # 主版本号
-        self.MinorVersionNum = 2  # 次版本号
-        self.RevisionVersionNum = 1  # 修订版本号
-        self.DateVersionNum = "20250208"  # 日期版本号
-        self.Meta = "F**kNuitka"  # 元数据信息，如构建状态
+        self.MinorVersionNum = 3  # 次版本号
+        self.RevisionVersionNum = 2  # 修订版本号
+        self.DateVersionNum = "202502012"  # 日期版本号
+        self.Meta = ""  # 元数据信息，如构建状态
         self.version = None  # 完整版本字符串，初始化为空
 
         # 设置请求远程配置的URL和头部信息
@@ -48,7 +48,7 @@ class Config:
             self.version.append(int(self.DateVersionNum))
             return self.version
         else:
-            self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}~{version_fields['Meta']}"
+            self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}{version_fields['Meta']}"
             return self.version
 
     def GetInfo(self):

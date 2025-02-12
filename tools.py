@@ -1,26 +1,17 @@
 # 导入必要的模块和自定义工具包
-from os import getcwd, startfile, path
+from os import getcwd, startfile, path, makedirs
 from os.path import exists
-from pathlib import Path
 from re import search
 from shutil import rmtree
-from subprocess import CalledProcessError, run
-from winreg import (
-    OpenKey, SetValueEx, HKEY_LOCAL_MACHINE,
-    REG_SZ, KEY_SET_VALUE
-)
+from subprocess import CalledProcessError
+from subprocess import run
 from zipfile import ZipFile
 
 from DownloadKit import DownloadKit  # 自定义下载工具类
+from setuptools.sandbox import save_path
 
 from config import Config
 from log import Logger
-
-# 配置参数
-MIRROR_URL = "https://mirrors.tuna.tsinghua.edu.cn/Adoptium/21.0.3+9/"
-VERSION = "21.0.3_9"
-INSTALL_DIR = Path(r"C:\Program Files\Java")
-TEMP_FILE = Path.home() / "jdk_temp.zip"
 
 config = Config()
 logger = Logger(__name__)
@@ -92,7 +83,7 @@ def check_java_version():
                 return False # Java 6或更早版本
 
         # 检查OpenJDK格式版本号（例如：17.0.2+8-Ubuntu-122.04.1）
-        match = search(r'openjdk version "(.*?)"', output)
+        match = search(r'openjdk "(.*?)"', output)
         if match:
             version_string = match.group(1)
             version_parts = version_string.split('.')
@@ -116,60 +107,35 @@ def check_java_version():
         logger.error(f"发生了意想不到的错误: {e}")
         return False
 
+
 # 配置参数
-ARCHITECTURE = "x64" if path.exists("C:\\Program Files (x86)") else "x86"
-INSTALLER_FILENAME = f"OpenJDK{VERSION}-{ARCHITECTURE}_msi.zip"
-INSTALL_DIR = Path(r"C:\Program Files\Java")
-JAVA_INSTALLER_PATH = INSTALL_DIR / f"jdk-{VERSION}.msi"
-
-
-def download_java_installer():
-    """下载Java安装包"""
-    d = DownloadKit(INSTALL_DIR)
-    url = f"{MIRROR_URL}{INSTALLER_FILENAME}"
-    d.download(url, file_exists="overwrite", show_msg=True)
-
-
-def extract_installer():
-    """解压下载的安装包至指定目录"""
-    with ZipFile(INSTALL_DIR / INSTALLER_FILENAME, 'r') as zip_ref:
-        zip_ref.extractall(INSTALL_DIR)
-    logger.info(f"安装包 {INSTALLER_FILENAME} 解压完成")
-
-
-def register_java_in_registry():
-    """在注册表中注册Java路径以便系统识别"""
-    try:
-        key_path = r"SOFTWARE\JavaSoft\Java Development Kit"
-        with OpenKey(HKEY_LOCAL_MACHINE, key_path, access=KEY_SET_VALUE) as key:
-            SetValueEx(key, "CurrentVersion", 0, REG_SZ, VERSION)
-            java_home = str(INSTALL_DIR / f"jdk-{VERSION}")
-            SetValueEx(key, "JavaHome", 0, REG_SZ, java_home)
-        logger.info("Java已成功注册到系统注册表")
-    except Exception as e:
-        logger.error(f"注册表操作失败: {e}")
-
-
-def silent_install_java():
-    """执行Java的静默安装"""
-    try:
-        command = [JAVA_INSTALLER_PATH, "/i", "/qn"]
-        run(command, check=True)
-        logger.info("Java已静默安装完成")
-    except CalledProcessError as e:
-        logger.error(f"Java安装过程中发生错误: {e}")
-    except FileNotFoundError:
-        logger.error("找不到Java安装文件，请确保正确下载并解压")
-
-
 def install_java():
-    """主函数：下载、解压、安装Java，并注册至系统"""
-    logger.info("开始下载Java安装包...")
-    download_java_installer()
-    logger.info("下载完成，开始解压...")
-    extract_installer()
-    logger.info("准备安装Java...")
-    silent_install_java()
-    logger.info("安装完毕，正在注册至系统注册表...")
-    register_java_in_registry()
+    # 配置下载参数
+    file_url = 'https://cdn.647382.xyz/mzmcos/OpenJDK21U-jdk_x64_windows_hotspot_21.0.6_7.msi'
+    save_path = getcwd() + r'\tmp\OpenJDK21U-jdk_x64_windows_hotspot_21.0.6_7.msi'
+    # 初始化下载器
+    downloader = DownloadKit(r'.\tmp')
+    # 执行下载
+    try:
+        downloader.download(file_url,file_exists="overwrite", show_msg=True)
+    except Exception as e:
+        logger.error(f"下载失败: {str(e)}")
+        raise JavaInstallFailedError
+    else:
+        logger.info(f"JDK下载成功")
 
+    # 静默安装配置
+    install_cmd = [
+        'msiexec',
+        '/i', save_path,
+        '/qn',  # 完全静默模式
+        '/norestart'  # 不强制重启
+    ]
+
+    # 执行安装
+    try:
+        run(install_cmd, check=True, shell=True)
+        logger.info("Java 21已成功静默安装")
+    except Exception as e:
+        logger.error(f"安装失败: {str(e)}")
+        raise JavaInstallFailedError
