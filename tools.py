@@ -8,7 +8,7 @@ from subprocess import run
 from zipfile import ZipFile
 
 from DownloadKit import DownloadKit  # 自定义下载工具类
-from setuptools.sandbox import save_path
+
 
 from config import Config
 from log import Logger
@@ -21,6 +21,7 @@ def Download():
     """下载启动器压缩包"""
     d = DownloadKit(r'.\tmp')
     d.download(config.LauncherUrl, file_exists="overwrite", show_msg=True)
+
 
 
 # 解压函数，解压之前下载的ZIP文件到指定目录

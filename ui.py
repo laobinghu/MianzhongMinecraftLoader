@@ -1,10 +1,9 @@
 from tkinter import Tk, StringVar, IntVar, messagebox
-from tkinter import ttk
+import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from time import sleep
 from os.path import exists
-from threading import Thread
-#from typing import Optional, Dict
+from ttkbootstrap.constants import *
 
 from tools import (
     Download,
@@ -19,9 +18,8 @@ from config import Config
 from log import Logger
 from ui_constants import UIConstants
 
-
 class JavaInstallFailedError(Exception):
-    """Java环境安装失败异常"""
+    """自定义异常：Java安装失败"""
     pass
 
 
@@ -30,6 +28,7 @@ class MinecraftLoader:
         self.master = master
         self.config = Config()
         self.logger = Logger(__name__)
+        self.MID = "您的机器码为{}".format(self.config.GetMID())
 
         self._init_window()
         self._create_styles()
@@ -41,7 +40,6 @@ class MinecraftLoader:
         """初始化窗口配置"""
         self.master.title(UIConstants.WINDOW_TITLE)
         self.master.iconbitmap(UIConstants.ICON_PATH)
-        self.master.configure(background=UIConstants.BACKGROUND_COLOR)
 
         width, height = UIConstants.WINDOW_SIZE
         screen_width = self.master.winfo_screenwidth()
@@ -57,12 +55,7 @@ class MinecraftLoader:
 
     def _create_styles(self):
         """创建界面样式"""
-        self.style = ttk.Style()
-        self.style.theme_use('clam')
-        self.style.configure("TProgressbar",
-                             thickness=UIConstants.PROGRESS_HEIGHT,
-                             background=UIConstants.PROGRESS_COLOR,
-                             troughcolor=UIConstants.PROGRESS_BG_COLOR)
+        self.style = ttk.Style(theme="pulse")
 
     def _create_widgets(self):
         """创建界面组件"""
@@ -71,7 +64,7 @@ class MinecraftLoader:
         self.progressbar = ttk.Progressbar(
             self.master,
             variable=self.progress_value,
-            style="TProgressbar"
+            bootstyle="danger-striped"
         )
         self.progressbar.place(**UIConstants.PROGRESS_LAYOUT)
 
@@ -81,11 +74,20 @@ class MinecraftLoader:
             self.master,
             textvariable=self.info_text,
             anchor="center",
-            background=UIConstants.BACKGROUND_COLOR,
             font=UIConstants.FONT_LABEL,
-            foreground=UIConstants.TEXT_COLOR
+        bootstyle = "default"
         )
         self.info_label.place(**UIConstants.LABEL_LAYOUT)
+
+        #机器码
+        self.mid_label = ttk.Label(
+            self.master,
+            text=self.MID,
+            anchor="center",
+            font=UIConstants.MID_FONT_LABEL,
+            bootstyle="secondary"
+        )
+        self.mid_label.place(**UIConstants.MID_LAYOUT)
 
     def _load_resources(self):
         """加载图片资源"""
@@ -104,8 +106,7 @@ class MinecraftLoader:
         self.image_label = ttk.Label(
             self.master,
             image=self.logo_image,
-            anchor="center",
-            background=UIConstants.BACKGROUND_COLOR
+            anchor="center"
         )
         self.image_label.place(**UIConstants.IMAGE_LAYOUT)
 
@@ -121,7 +122,7 @@ class MinecraftLoader:
         steps = [
             (10, "与服务器建立连接..."),
             (20, "验证账号信息..."),
-            (30, "同步游戏数据..."),
+            (50, "同步数据..."),
             (100, "通信完成")
         ]
         for progress, message in steps:
@@ -134,7 +135,7 @@ class MinecraftLoader:
             self._update_ui(40, "Java环境校验通过")
             sleep(0.5)
         else:
-            raise JavaInstallFailedError("Java安装后校验失败")
+            self._install_java()
 
     def _install_java(self):
         """执行Java安装流程"""

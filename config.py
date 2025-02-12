@@ -10,8 +10,8 @@ class Config:
         self.ReleaseCode = "通慧"  # 发布代码标识
         self.VersionType = "Release"  # 版本类型（开发版、正式版等）
         self.MajorVersionNum = 2  # 主版本号
-        self.MinorVersionNum = 4  # 次版本号
-        self.RevisionVersionNum = 2  # 修订版本号
+        self.MinorVersionNum = 5  # 次版本号
+        self.RevisionVersionNum = 0  # 修订版本号
         self.DateVersionNum = "202502012"  # 日期版本号
         self.version = None  # 完整版本字符串，初始化为空
 
@@ -37,8 +37,7 @@ class Config:
             'MajorVersionNum': self.MajorVersionNum,
             'MinorVersionNum': self.MinorVersionNum,
             'RevisionVersionNum': self.RevisionVersionNum,
-            'DateVersionNum': self.DateVersionNum,
-            'Meta': self.Meta
+            'DateVersionNum': self.DateVersionNum
         }
         # 根据字段拼接版本字符串
         if builder:
@@ -49,7 +48,7 @@ class Config:
             self.version.append(int(self.DateVersionNum))
             return self.version
         else:
-            self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}{version_fields['Meta']}"
+            self.version = f"{version_fields['ReleaseCode']} {version_fields['VersionType']} {version_fields['MajorVersionNum']}.{version_fields['MinorVersionNum']}.{version_fields['RevisionVersionNum']}-{version_fields['DateVersionNum']}"
             return self.version
 
     def GetInfo(self):

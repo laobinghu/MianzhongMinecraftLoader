@@ -10,7 +10,7 @@ try:
     loader = MinecraftLoader(root)
     Thread(target=loader.main_loop).start()
     root.mainloop()
-except:
+except RuntimeError:
     pass
 finally:
     logger.info("程序退出")
