@@ -1,6 +1,5 @@
 /nuitka-crash-report.xml
 *.exe
-*.spec
 /build
 /dist
 /__pycache__

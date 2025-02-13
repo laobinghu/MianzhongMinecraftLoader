@@ -29,7 +29,7 @@ class Config:
 
         self.MID = generate_mid()
 
-    def GetVersion(self,builder=False):
+    def GetVersion(self,updater=False):
         """生成并返回完整版本字符串"""
         version_fields = {
             'ReleaseCode': self.ReleaseCode,
@@ -40,7 +40,7 @@ class Config:
             'DateVersionNum': self.DateVersionNum
         }
         # 根据字段拼接版本字符串
-        if builder:
+        if updater:
             self.version = list()
             self.version.append(self.MajorVersionNum)
             self.version.append(self.MinorVersionNum)
