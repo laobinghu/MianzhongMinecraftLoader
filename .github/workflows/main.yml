@@ -1,56 +1,19 @@
-name: Tag Workflow
 on:
   push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
-    
 jobs:
-  build:
-    runs-on: windows-latest
+  pyinstaller-build:
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code with current tag
-        uses: actions/checkout@v4
+      - name: Create Executable
+        uses: sayyid5416/pyinstaller@v1
         with:
-          ref: ${{ github.ref }}
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          architecture: 'x64'
-          cache: 'pip'
-          cache-dependency-path: |
-            **/requirements*.txt
-      - name: Install dependencies
-        run:
-          pip install -r requirements.txt
-      - name: Build project with Nuitka-Action
-        uses: Nuitka/Nuitka-Action@main
-        with:
-          windows-icon-from-ico: ./loader.ico
-          nuitka-version: main
-          script-name: main.py
-          mode: app
-          enable-plugins: tk-inter
-          windows-console-mode: disable
-          mingw64: yes
-          show-memory: yes
-          include-data-dir: asset=asset
-          assume-yes-for-downloads: yes
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-        with:
-          tag_name: v2-dev
-          release_name: Auto Build 
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/main.exe
-          asset_name: main.exe
-          asset_content_type: application/zip
+          python_ver: '3.12'
+          spec: 'main.py'
+          requirements: 'requirements.txt'
+          upload_exe_with_name: 'MianzhongMinecraftLoader'
+          options: --onefile, --name "MianzhongMinecraftLoader", --windowed, -i=loader.ico
+          spec_options: 
