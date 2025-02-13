@@ -28,7 +28,7 @@ def generate_mid():
         ('Motherboard', 'wmic baseboard get SerialNumber /value', 'SerialNumber')
     ]
 
-    combined = ''.join(get_hardware_ids(component[1], component[2]) for component in hardware_components)
+    combined = ''.join(get_hardware_ids(component[0], component[2]) for component in hardware_components)
     combined += hex(getnode())[2:]
 
     if combined:
@@ -50,4 +50,5 @@ def generate_mid():
         return formatted_code
     else:
         return None
-
+if __name__ == "__main__":
+    print(generate_mid())
