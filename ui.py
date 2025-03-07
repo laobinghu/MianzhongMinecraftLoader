@@ -3,7 +3,6 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from time import sleep
 from os.path import exists
-from ttkbootstrap.constants import *
 
 from tools import (
     Download,
