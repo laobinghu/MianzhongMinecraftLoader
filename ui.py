@@ -1,8 +1,9 @@
-from tkinter import Tk, StringVar, IntVar, messagebox
+from tkinter import Tk, StringVar, IntVar, messagebox, Toplevel
 import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from time import sleep
 from os.path import exists
+#from ttkbootstrap.constants import *
 
 from tools import (
     Download,
@@ -32,7 +33,7 @@ class MinecraftLoader:
         self._init_window()
         self._create_styles()
         self._create_widgets()
-        self._load_resources()
+        self._load_resources(UIConstants.IMAGE_PATH)
         self.logger.info("Minecraft Loader 初始化完成")
 
     def _init_window(self):
@@ -88,13 +89,23 @@ class MinecraftLoader:
         )
         self.mid_label.place(**UIConstants.MID_LAYOUT)
 
-    def _load_resources(self):
+        # 关于
+        self.about_label = ttk.Label(
+            self.master,
+            text="关于",
+            cursor="hand2"  # 改变鼠标指针形状，提示用户可以点击
+        )
+        self.about_label.place(**UIConstants.ABOUT_LAYOUT)
+
+        self.about_label.bind("<Button-1>", self.show_about_window)
+
+
+    def _load_resources(self,path):
         """加载图片资源"""
         try:
-            img = Image.open(UIConstants.IMAGE_PATH).resize(
+            img = Image.open(path).resize(
                 (UIConstants.IMAGE_WIDTH, UIConstants.IMAGE_HEIGHT),
-                Image.Resampling.LANCZOS
-            )
+                Image.Resampling.LANCZOS)
             self.logo_image = ImageTk.PhotoImage(img)
             self.logger.info(f"成功加载图片: {UIConstants.IMAGE_PATH}")
         except FileNotFoundError:
@@ -210,6 +221,32 @@ class MinecraftLoader:
     def _safe_shutdown(self):
         """安全关闭程序"""
         self.master.after(400, self.master.destroy)
+
+    def show_about_window(self, event):
+        """显示关于窗口"""
+        about_window = Toplevel(self.master)
+        about_window.title("关于")
+        about_window.geometry("250x300")  # 设置窗口大小
+
+        icon_path = "./asset/dev_logo.png"  # 图标路径
+        icon_image = Image.open(icon_path).resize(
+                (100, 100),
+                Image.Resampling.LANCZOS)  # 打开图片
+        icon_photo = ImageTk.PhotoImage(icon_image)  # 转换为PhotoImage对象
+
+        # 在新窗口中添加图标
+        icon_label = ttk.Label(about_window, image=icon_photo)
+        icon_label.image = icon_photo  # 保持引用防止被垃圾回收
+        icon_label.place(relx=0.5, rely=0.05, anchor="n")  # 定位图标于窗口顶部中心
+
+        # 在新窗口中添加内容
+        about_message = "MianzhongMinecraftLoader\n\n版本: {}\n作者: 烧瑚烙饼\n\n©2024-2025 绵中方块人服务器管理组 保留所有权力".format(self.config.GetVersion())
+        label = ttk.Label(about_window, text=about_message, wraplength=280)
+        label.place(relx=0.1,rely=0.4)
+
+        # 添加关闭按钮
+        close_button = ttk.Button(about_window, text="关闭", command=about_window.destroy)
+        close_button.place(relx=0.4,rely=0.85)
 
     def main_loop(self):
         """主业务流程"""

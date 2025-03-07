@@ -39,6 +39,12 @@ class UIConstants:
         "relwidth": 0.8,
         "relheight": 0.12
     }
+    ABOUT_LAYOUT = {
+        "relx": 0.9,
+        "rely": 0.9,
+        "relwidth": 0.8,
+        "relheight": 0.12
+    }
     IMAGE_LAYOUT = {
         "relx": 0.05,
         "rely": 0.05,
