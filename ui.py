@@ -222,16 +222,22 @@ class MinecraftLoader:
         """安全关闭程序"""
         self.master.after(400, self.master.destroy)
 
-    def show_about_window(self, event):
+    about_window_open = False  # 新增：用于跟踪关于窗口的状态
+
+    def show_about_window(self, event=None):
         """显示关于窗口"""
+        if self.about_window_open:  # 如果已经有打开的关于窗口，则不再打开新的
+            return
+
+        self.about_window_open = True  # 设置标志位，表示有关于窗口已打开
         about_window = Toplevel(self.master)
         about_window.title("关于")
         about_window.geometry("250x300")  # 设置窗口大小
 
         icon_path = "./asset/dev_logo.png"  # 图标路径
         icon_image = Image.open(icon_path).resize(
-                (100, 100),
-                Image.Resampling.LANCZOS)  # 打开图片
+            (100, 100),
+            Image.Resampling.LANCZOS)  # 打开图片
         icon_photo = ImageTk.PhotoImage(icon_image)  # 转换为PhotoImage对象
 
         # 在新窗口中添加图标
@@ -240,13 +246,20 @@ class MinecraftLoader:
         icon_label.place(relx=0.5, rely=0.05, anchor="n")  # 定位图标于窗口顶部中心
 
         # 在新窗口中添加内容
-        about_message = "MianzhongMinecraftLoader\n\n版本: {}\n作者: 烧瑚烙饼\n\n©2024-2025 绵中方块人服务器管理组 保留所有权力".format(self.config.GetVersion())
+        about_message = "MianzhongMinecraftLoader\n\n版本: {}\n作者: 烧瑚烙饼\n\n©2024-2025 绵中方块人服务器管理组 保留所有权力".format(
+            self.config.GetVersion())
         label = ttk.Label(about_window, text=about_message, wraplength=280)
-        label.place(relx=0.1,rely=0.4)
+        label.place(relx=0.1, rely=0.4)
 
         # 添加关闭按钮
-        close_button = ttk.Button(about_window, text="关闭", command=about_window.destroy)
-        close_button.place(relx=0.4,rely=0.85)
+        close_button = ttk.Button(about_window, text="关闭", command=lambda: self._close_about_window(about_window))
+        close_button.place(relx=0.4, rely=0.85)
+
+    def _close_about_window(self, window):
+        """处理关于窗口关闭事件，重置标志位"""
+        window.destroy()
+        self.about_window_open = False
+
 
     def main_loop(self):
         """主业务流程"""
