@@ -3,6 +3,7 @@ import ttkbootstrap as ttk
 from PIL import Image, ImageTk
 from time import sleep
 from os.path import exists
+from webbrowser import open
 #from ttkbootstrap.constants import *
 
 from tools import (
@@ -17,6 +18,7 @@ from tools import (
 from config import Config
 from log import Logger
 from ui_constants import UIConstants
+from updater import check_update
 
 class JavaInstallFailedError(Exception):
     """自定义异常：Java安装失败"""
@@ -29,6 +31,7 @@ class MinecraftLoader:
         self.config = Config()
         self.logger = Logger(__name__)
         self.MID = "您的机器码为{}".format(self.config.GetMID())
+        self.update = check_update()
 
         self._init_window()
         self._create_styles()
@@ -127,17 +130,6 @@ class MinecraftLoader:
         self.master.update_idletasks()
         self.logger.info(f"UI更新 - 进度: {progress}% | 信息: {message}")
 
-    def _simulate_network_communication(self):
-        """模拟网络通信流程"""
-        steps = [
-            (10, "与服务器建立连接..."),
-            (20, "验证账号信息..."),
-            (50, "同步数据..."),
-            (100, "通信完成")
-        ]
-        for progress, message in steps:
-            self._update_ui(progress, message)
-            sleep(0.3)
 
     def _validate_java_installation(self):
         """验证Java安装结果"""
@@ -264,24 +256,49 @@ class MinecraftLoader:
     def main_loop(self):
         """主业务流程"""
         try:
-            self._simulate_network_communication()
+            steps = [
+                (10, "从服务器拉取数据中,请稍后..."),
+                (20, "检查更新中..."),
+                (50, "同步数据..."),
+                (50, f"发现新版本{self.update[1]}"),
+                (100, "通信完成")
+            ]
 
-            # 检查Java环境
-            if not check_java_version():
-                self._install_java()
-            self._validate_java_installation()
+            self._update_ui(*steps[0])
+            sleep(0.7)
+            self._update_ui(*steps[1])
+            sleep(0.3)
+            if self.update[0]:
+                self._update_ui(*steps[2])
+                sleep(0.3)
+                self._update_ui(*steps[4])
+                sleep(0.3)
+                # 检查Java环境
+                if not check_java_version():
+                    self._install_java()
+                    self._validate_java_installation()
 
-            # 处理启动器逻辑
-            server_config = self.config.handle_server_config()
-            if not server_config:
-                self._handle_config_error()
-                return
+                # 处理启动器逻辑
+                server_config = self.config.handle_server_config()
+                if not server_config:
+                    self._handle_config_error()
+                    return
 
-            if server_config["launcher"].get("ForceDownload") == "true":
-                self._force_update_launcher()
+                if server_config["launcher"].get("ForceDownload") == "true":
+                    self._force_update_launcher()
+                else:
+                    self._normal_update_launcher()
+
             else:
-                self._normal_update_launcher()
-
+                self._update_ui(*steps[3])
+                self.logger.info(f"发现新版本{self.update[1]},终止启动")
+                messagebox.showinfo(
+                    "发现新版本",
+                    f"发现新版本{self.update[1]},请您尽快更新!\n更新内容:\n{self.update[3]}\n点击确认打开浏览器开始下载"
+                )
+                open(f"{self.update[2]}")
+                sleep(0.3)
+                self._safe_shutdown()
         except JavaInstallFailedError as e:
             self.logger.error("Java安装失败")
             messagebox.showerror(
@@ -294,4 +311,5 @@ class MinecraftLoader:
             self._update_ui(0, f"发生未知错误: {str(e)}")
             sleep(2)
             self._safe_shutdown()
+
 

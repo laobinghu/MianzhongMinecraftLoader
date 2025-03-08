@@ -10,8 +10,8 @@ class Config:
         self.ReleaseCode = "通慧"  # 发布代码标识
         self.VersionType = "Release"  # 版本类型（开发版、正式版等）
         self.MajorVersionNum = 2  # 主版本号
-        self.MinorVersionNum = 6  # 次版本号
-        self.RevisionVersionNum = 1  # 修订版本号
+        self.MinorVersionNum = 7  # 次版本号
+        self.RevisionVersionNum = 0  # 修订版本号
         self.DateVersionNum = "20250308"  # 日期版本号
         self.version = None  # 完整版本字符串，初始化为空
 
@@ -29,7 +29,7 @@ class Config:
 
         self.MID = generate_mid()
 
-    def GetVersion(self,updater=False):
+    def GetVersion(self,updater=False) -> list[int] | str:
         """生成并返回完整版本字符串"""
         version_fields = {
             'ReleaseCode': self.ReleaseCode,
